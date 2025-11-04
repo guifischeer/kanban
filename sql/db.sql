@@ -1,5 +1,5 @@
 
-CREATE DATABASE IF NOT EXISTS kanban;
+CREATE DATABASE kanban;
 USE kanban;
 
 
