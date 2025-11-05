@@ -1,29 +1,44 @@
+<?php
+include 'db_connect.php';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = $_POST["email"];
+    $senha = $_POST["senha"];
+
+    $stmt = $conn->prepare("SELECT * FROM usuarios WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($user = $result->fetch_assoc()) {
+        if (password_verify($senha, $user['senha'])) {
+            $_SESSION['usuario_id'] = $user['id'];
+            $_SESSION['usuario_nome'] = $user['nome'];
+            header("Location: menu.php");
+            exit;
+        } else {
+            $erro = "Senha incorreta.";
+        }
+    } else {
+        $erro = "Usuário não encontrado.";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Kanban</title>
+    <title>Login - Kanban</title>
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <h1>Menu</h1>
-    <ul>
-        <li><a href="public/usuarios.php">Cadastrar Usuário</a></li>
-        <li><a href="public/tarefas.php">Cadastrar Tarefa</a></li>
-        <li><a href="public/gerenciar.php">Gerenciar Tarefas</a></li>
-    </ul>
-
-    <link rel="stylesheet" href="styles/style.css">
-
-<div class="container">
-    <h1>Login</h1>
-    <form action="public/gerenciar.php" method="post">
-        <input type="text" name="usuario" placeholder="Usuário" required>
-        <input type="password" name="senha" placeholder="Senha" required>
+    <h2>Login</h2>
+    <?php if (!empty($erro)) echo "<p class='erro'>$erro</p>"; ?>
+    <form method="POST">
+        <input type="email" name="email" placeholder="E-mail" required><br>
+        <input type="password" name="senha" placeholder="Senha" required><br>
         <button type="submit">Entrar</button>
     </form>
-    <a href="public/cadastrar.php">Criar conta</a>
-</div>
-
+    <p>Não tem conta? <a href="cadastro.php">Cadastre-se aqui</a></p>
 </body>
 </html>
