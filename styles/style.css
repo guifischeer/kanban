@@ -1,43 +1,110 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-    background-color: #f5f5f5;
+    background: #f6f8fb;
+    margin: 0;
+    color: #222;
 }
 
-h1,
-h2 {
-    color: #333;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-form {
-    margin: 20px auto;
-    width: 300px;
+.userbox a {
+    margin-left: 12px;
+    color: #1976d2;
+    text-decoration: none
+}
+
+.card {
     background: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    max-width: 420px;
+    margin: 60px auto;
+}
+
+label {
+    display: block;
+    margin-top: 8px
 }
 
 input,
 textarea,
-button {
-    width: 90%;
-    margin-bottom: 10px;
+select {
+    width: 100%;
     padding: 8px;
+    margin-top: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px
 }
 
 button {
-    background: #007BFF;
-    color: white;
+    margin-top: 12px;
+    padding: 10px 14px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #1976d2;
+    color: #fff
 }
 
-button:hover {
-    background: #0056b3;
+.error {
+    color: #b00020
 }
 
-.erro {
-    color: red;
-    font-weight: bold;
+main {
+    display: flex;
+    gap: 20px;
+    padding: 24px
+}
+
+.kanban {
+    display: flex;
+    gap: 12px;
+    flex: 1
+}
+
+.column {
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    min-width: 220px;
+    height: 400px;
+    overflow: auto
+}
+
+.card-task {
+    border: 1px solid #eee;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px
+}
+
+.side {
+    width: 340px
+}
+
+.api-box {
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+table th,
+table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    text-align: left
 }

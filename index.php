@@ -1,44 +1,53 @@
 <?php
+session_start();
 include 'db_connect.php';
+if (isset($_SESSION['usuario_id'])) {
+    header('Location: menu.php');
+    exit;
+}
+$msg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = $_POST["email"];
-    $senha = $_POST["senha"];
-
-    $stmt = $conn->prepare("SELECT * FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare('SELECT id,nome,senha FROM usuarios WHERE email = ? LIMIT 1');
+    $stmt->bind_param('s', $email);
     $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($user = $result->fetch_assoc()) {
+    $res = $stmt->get_result();
+    if ($user = $res->fetch_assoc()) {
         if (password_verify($senha, $user['senha'])) {
+            // login ok
             $_SESSION['usuario_id'] = $user['id'];
             $_SESSION['usuario_nome'] = $user['nome'];
-            header("Location: menu.php");
+            header('Location: menu.php');
             exit;
         } else {
-            $erro = "Senha incorreta.";
+            $msg = 'Senha incorreta.';
         }
     } else {
-        $erro = "Usuário não encontrado.";
+        $msg = 'Usuário não encontrado.';
     }
 }
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Login - Kanban</title>
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <h2>Login</h2>
-    <?php if (!empty($erro)) echo "<p class='erro'>$erro</p>"; ?>
-    <form method="POST">
-        <input type="email" name="email" placeholder="E-mail" required><br>
-        <input type="password" name="senha" placeholder="Senha" required><br>
-        <button type="submit">Entrar</button>
-    </form>
-    <p>Não tem conta? <a href="cadastro.php">Cadastre-se aqui</a></p>
+    <div class="card">
+        <h2>Entrar</h2>
+        <?php if ($msg): ?><p class="error"><?=htmlspecialchars($msg)?></p><?php endif; ?>
+        <form method="post" autocomplete="off">
+            <label>E-mail</label>
+            <input type="email" name="email" required>
+            <label>Senha</label>
+            <input type="password" name="senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <p>Não tem conta? <a href="cadastro.php">Cadastre-se</a></p>
+    </div>
 </body>
 </html>

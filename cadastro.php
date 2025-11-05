@@ -1,38 +1,53 @@
 <?php
 include 'db_connect.php';
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nome = $_POST["nome"];
-    $email = $_POST["email"];
-    $senha = password_hash($_POST["senha"], PASSWORD_DEFAULT);
-
-    $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $nome, $email, $senha);
-
-    if ($stmt->execute()) {
-        header("Location: index.php");
-        exit;
+session_start();
+if (isset($_SESSION['usuario_id'])) {
+    header('Location: menu.php');
+    exit;
+}
+$erro = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erro = 'E-mail inválido.';
+    } elseif (strlen($senha) < 6) {
+        $erro = 'Senha deve ter pelo menos 6 caracteres.';
     } else {
-        $erro = "Erro ao cadastrar. E-mail já existente.";
+        $hash = password_hash($senha, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare('INSERT INTO usuarios (nome,email,senha) VALUES (?,?,?)');
+        $stmt->bind_param('sss', $nome, $email, $hash);
+        if ($stmt->execute()) {
+            header('Location: index.php');
+            exit;
+        } else {
+            $erro = 'Erro ao cadastrar. E-mail pode já estar em uso.';
+        }
     }
 }
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Cadastro - Kanban</title>
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <h2>Cadastrar Usuário</h2>
-    <?php if (!empty($erro)) echo "<p class='erro'>$erro</p>"; ?>
-    <form method="POST">
-        <input type="text" name="nome" placeholder="Nome" required><br>
-        <input type="email" name="email" placeholder="E-mail" required><br>
-        <input type="password" name="senha" placeholder="Senha" required><br>
-        <button type="submit">Cadastrar</button>
-    </form>
-    <p><a href="index.php">Voltar ao login</a></p>
+    <div class="card">
+        <h2>Cadastro</h2>
+        <?php if ($erro): ?><p class="error"><?=htmlspecialchars($erro)?></p><?php endif; ?>
+        <form method="post" autocomplete="off">
+            <label>Nome</label>
+            <input type="text" name="nome" required>
+            <label>E-mail</label>
+            <input type="email" name="email" required>
+            <label>Senha (mínimo 6 caracteres)</label>
+            <input type="password" name="senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p><a href="index.php">Voltar ao login</a></p>
+    </div>
 </body>
 </html>
